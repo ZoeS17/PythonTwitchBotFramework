@@ -26,7 +26,7 @@ class Message:
         self.receiver: Optional[str] = None
         self.irc: Irc = irc
         self.tags: Optional[Tags] = None
-        self.emotes: List[Emote] = []
+        self.emotes: Tuple[Emote] = ()
         self.mentions: Tuple[str] = ()
         self.system_message: Optional[str] = None
         self.bot: 'BaseBot' = bot

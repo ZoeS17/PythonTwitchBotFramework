@@ -1,7 +1,7 @@
 import asyncio
 import re
 import typing
-from asyncio import StreamWriter, StreamReader
+from asyncio import StreamWriter, StreamReader, Queue
 from textwrap import wrap
 
 from .shared import get_bot
@@ -23,6 +23,17 @@ class Irc:
         self.reader: StreamReader = reader
         self.writer: StreamWriter = writer
         self.bot: 'BaseBot' = get_bot()
+        self.queue = Queue()
+
+    async def _add_to_message_queue(self, msg: str):
+        future = asyncio.get_event_loop().create_future()
+        await self.queue.put((msg, future))
+        return future
+
+    async def _send_loop(self):
+        while True:
+            msg, future = self.queue.get()
+            future.set_result(None)
 
     def send(self, msg):
         """
